@@ -1,0 +1,22 @@
+    :root {
+      --primary:    #5b3ef5;
+      --primary-lt: #ede9fe;
+      --success:    #16a34a;
+      --success-lt: #dcfce7;
+      --danger:     #dc2626;
+      --danger-lt:  #fee2e2;
+      --text:       #111827;
+      --muted:      #6b7280;
+      --border:     #e5e7eb;
+      --card-bg:    #ffffff;
+      --bg:         #f5f6fa;
+      --tag-bg:     #f1f0ff;
+      --tag-color:  #5b3ef5;
+    }
+
+/* ── NAVBAR ── */
+.navbar {
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 56px;
+}

@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!--Section statistiques-->
+    <div class="row g-3 p-3">
+
+       <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Total activités
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{total_activites}}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Bugs
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{bugs}}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Sprints
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{sprints}}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Veilles partagées
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{veilles}}
+                    </h2>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!--Section graphique-->
+    <div class="card border-0 shadow-sm m-3">
+
+        <div class="card-body">
+
+            <h5 class="fw-bold mb-4">
+                Aperçu hebdomadaire
+            </h5>
+
+            <canvas id="weeklyChart" height="100"></canvas>
+
+        </div>
+
+    </div>
+    
+    {% if activites %}
+        <!--Section activités récentes (globales)-->
+        <div>
+            <h2 class="p-3 fw-bold" style="color: #0F172A; font-size: 20px;">Activités récentes de l'équipe</h2>
+            <div class="row g-3 p-3">
+                {% for activite in activites  %}
+
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+
+                            <div class="card-body">
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                {% if activite.category.name|lower == "bug" %}
+                                    <span class="badge" style="color:#EF4444; background: #FEE2E2;">
+                                        {{ activite.category }}
+                                    </span>
+
+                                {% elif activite.category.name|lower == "sprint" %}
+                                    <span class="badge" style="color:#22C55E; background: #DCFCE7;">
+                                        {{ activite.category }}
+                                    </span>
+
+                                {% elif activite.category.name|lower == "veille" %}
+                                    <span class="badge" style="color:#CA8A04; background:#FEF9C3;">
+                                        {{ activite.category }}
+                                    </span>
+
+                                {% else %}
+                                    <span class="badge" style="color:#64748B; background:#E2E8F0;">
+                                        {{ activite.category }}
+                                    </span>
+                                {% endif %}
+                                    <span style="color: #94A3B8; font-size: 12px;">
+                                        {{activite.created_at}}
+                                    </span>
+                                </div>
+
+                                <h5 class="mt-3 fw-bold" style="color: #0F172A; font-size: 18px;">
+                                    {{activite.title}}
+                                </h5>
+
+                                <p style="color: #475569; font-size: 14px;padding-bottom: 10px;">
+                                    {{ activite.content|truncatechars:40 }}
+                                </p>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span style="height: 25px; width: 25px; border-radius: 100%; background-color: black;"><img src="" alt=""></span>
+                                        <span style="color: #334155; font-size: 12px;">{{ activite.author.username }}</span>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        {% if user.is_authenticated and user == activite.author %}
+                                            <a data-bs-toggle="modal" data-bs-target="#deleteModal{{ activite.id }}" class="text-decoration-none" style="color: red;"><i class="bi bi-trash"></i></a>
+                                            <a href="{% url 'activite_edit' activite.id %}" class="text-decoration-none" href=""><i class="bi bi-pencil-square"></i></a>
+                                        {% endif %}
+                                        <a href="{% url 'detail_activite' activite.id %}" style="background-color: #F8FAFC; padding: 4px 10px;border-radius: 10px; font-size: 12px; font-weight: bold; color: #334155; text-decoration: none;">Detail</a>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                
+                {% endfor %}
+
+            </div>
+
+            <div class="d-flex justify-content-center align-items-center p-3">
+                <a href="{% url 'liste_activite' %}" class="btn btn-primary" style="text-decoration: none;">Voir plus</a>
+            </div>
+
+        </div>
+    {% endif %}
+
+    {% if mes_activites %}
+        <!--Section mes activités récentes-->
+        <div>
+            <h2 class="p-3 fw-bold" style="color: #0F172A; font-size: 20px;">Mes activités récentes</h2>
+            <div class="row g-3 p-3">
+                {% for mon_activite in mes_activites  %}
+
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+
+                            <div class="card-body">
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                {% if mon_activite.category.name|lower == "bug" %}
+                                    <span class="badge" style="color:#EF4444; background: #FEE2E2;">
+                                        {{ mon_activite.category }}
+                                    </span>
+
+                                {% elif mon_activite.category.name|lower == "sprint" %}
+                                    <span class="badge" style="color:#22C55E; background: #DCFCE7;">
+                                        {{ mon_activite.category }}
+                                    </span>
+
+                                {% elif mon_activite.category.name|lower == "veille" %}
+                                    <span class="badge" style="color:#CA8A04; background:#FEF9C3;">
+                                        {{ mon_activite.category }}
+                                    </span>
+
+                                {% else %}
+                                    <span class="badge" style="color:#64748B; background:#E2E8F0;">
+                                        {{ mon_activite.category }}
+                                    </span>
+                                {% endif %}
+                                    <span style="color: #94A3B8; font-size: 12px;">
+                                        {{mon_activite.created_at}}
+                                    </span>
+                                </div>
+
+                                <h5 class="mt-3 fw-bold" style="color: #0F172A; font-size: 18px;">
+                                    {{mon_activite.title}}
+                                </h5>
+
+                                <p style="color: #475569; font-size: 14px;padding-bottom: 10px;">
+                                    {{ mon_activite.content|truncatechars:40 }}
+                                </p>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span style="height: 25px; width: 25px; border-radius: 100%; background-color: black;"><img src="" alt=""></span>
+                                        <span style="color: #334155; font-size: 12px;">{{ mon_activite.author.username }}</span>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        {% if user.is_authenticated and user == mon_activite.author %}
+                                            <a data-bs-toggle="modal" data-bs-target="#deleteModal{{ mon_activite.id }}" class="text-decoration-none" style="color: red;"><i class="bi bi-trash"></i></a>
+                                            <a href="{% url 'activite_edit' mon_activite.id %}" class="text-decoration-none" href=""><i class="bi bi-pencil-square"></i></a>
+                                        {% endif %}
+                                        <a href="{% url 'detail_activite' mon_activite.id %}" style="background-color: #F8FAFC; padding: 4px 10px;border-radius: 10px; font-size: 12px; font-weight: bold; color: #334155; text-decoration: none;">Detail</a>
+                                    </div>
+
+                                    
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+            <div class="modal fade" id="deleteModal{{ mon_activite.id }}" tabindex="-1">
+
+                <div class="modal-dialog modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <!-- Header -->
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                Confirmation
+                            </h5>
+
+                            <button 
+                                type="button" 
+                                class="btn-close"
+                                data-bs-dismiss="modal">
+                            </button>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="modal-body">
+                            Voulez-vous vraiment supprimer cette activité ?
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="modal-footer">
+
+                            <button 
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+
+                            <form method="post" action="{% url 'activite_delete' mon_activite.id %}">
+                                {% csrf_token %}
+
+                                <button type="submit" class="btn btn-danger">
+                                    Oui, supprimer
+                                </button>
+                            </form>
+                            
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+                
+                {% endfor %}
+
+            </div>
+            <div class="d-flex justify-content-center align-items-center p-3">
+                <a href="" class="btn btn-primary" style="text-decoration: none;">Voir plus</a>
+            </div>
+        </div>
+    {% endif %}
+
+
+{% endblock content %}

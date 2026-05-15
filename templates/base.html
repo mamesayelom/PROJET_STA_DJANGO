@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row min-vh-100">
+
+            <!-- Sidebar -->
+            <div class="col-md-2 bg-white border-end min-vh-100">
+                <div class="d-flex flex-column justify-content-between h-100">
+                    <div>
+                        <!-- Logo -->
+                        <div class="p-3">
+                            <h4 class="fw-bold">STA</h4>
+                        </div>
+
+                        <!-- Menu -->
+                        <ul class="nav flex-column">
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="{% url 'dasboard' %}">
+                                    Dashboard
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="#">
+                                    Mes Activités
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="{% url 'liste_activite' %}">
+                                    Équipe
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="#">
+                                    Base de Veille
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <div>
+                        <form method='post' action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Se deconnecter</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="col-md-10 bg-light p-0">
+
+                <!--Header-->
+                <div class="d-flex justify-content-between align-items-center p-3 bg-white">
+
+                    <div>
+                        <h2 class="fw-bold">Tableau de bord</h2>
+                        <p class="text-muted">
+                            Bienvenue {{user}}
+                        </p>
+                    </div>
+
+                    <a href="{% url 'ajouter_activite' %}" class="btn btn-primary">
+                        + Ajouter une activité
+                    </a>
+
+                </div>
+                <div>
+                    {% block content %}
+                    
+                    {% endblock content %}
+                </div>
+                
+                
+
+            </div>
+
+
+
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Chart.js (OBLIGATOIRE) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const ctx = document.getElementById('weeklyChart');
+
+        new Chart(ctx, {
+            type: 'line', // type de graphique
+            data: {
+                labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+
+                datasets: [{
+                    label: 'Activités',
+                    data: [12, 19, 15, 22, 14, 5, 2],
+
+                    borderColor: '#4F46E5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    fill: true,
+                    tension: 0.4, // courbe douce
+                    pointRadius: 5
+                }]
+            },
+
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

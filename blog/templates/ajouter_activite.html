@@ -1,0 +1,54 @@
+{% extends "base1.html" %}
+
+{% block content %}
+
+
+    <section class="bg-light py-5">
+
+        <!-- Top bar: back + action buttons -->
+        <div class="pb-5" style="margin-left: 23%;">
+            <a href="{% url 'liste_activite' %}" class="back-link text-decoration-none" style="color: black;">
+            <i class="bi bi-arrow-left"></i>
+            Retour aux activités
+            </a>
+        </div>
+
+        <form method="post" enctype="multipart/form-data"
+        class="p-4 shadow rounded-4 bg-white mx-auto" style="max-width: 700px;">
+        
+            {% csrf_token %}
+
+            <h3 class="text-center mb-4">Ajouter une activité</h3>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Titre</label>
+                {{ form.title }}
+                {{ form.title.errors }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Catégorie</label>
+                {{ form.category }}
+                {{ form.category.errors }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Contenu</label>
+                {{ form.content }}
+                {{ form.content.errors }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Image</label>
+                {{ form.image }}
+                {{ form.image.errors }}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Ajouter
+            </button>
+
+        </form>
+    </section>
+
+{% endblock %}

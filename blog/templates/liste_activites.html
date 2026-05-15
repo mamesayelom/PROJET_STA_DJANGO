@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!--Section activités-->
+    <div>
+
+        <!--Section filtre et recherche-->
+        <div class="d-flex justify-content-between align-items-center p-3">
+            <div class="d-flex align-items-center py-3 gap-2">
+                <a href="{% url 'liste_activite' %}" class="py-2 px-3 bg-white text-decoration-none" style="border-radius: 10px; color: #64748B;">Toutes</a>
+                <a href="?category=bug" class="py-2 px-3 bg-white text-decoration-none" style="border-radius: 10px; color: #64748B;">bug</a>
+                <a href="?category=sprint" class="py-2 px-3 bg-white text-decoration-none" style="border-radius: 10px; color: #64748B;">sprint</a>
+                <a href="?category=veille" class="py-2 px-3 bg-white text-decoration-none" style="border-radius: 10px; color: #64748B;">veille</a>
+            </div>
+            <form class="position-relative">
+                <div class="d-flex align-items-center gap-2 position-absolute" style="top: 10px; left: 10px;">
+                    <i class="bi bi-search" style="color: #9CA3AF; font-size: 14px;"></i>
+                    <span style="color: #9CA3AF; font-size: 14px;">Rechercher une activité...</span>
+                </div>
+                <input type="text" class="py-2 px-3 bg-white" style="width: 100%; border: none; border-radius: 5px;">
+            </form>
+        </div>
+
+        
+        <!--activités-->
+        <div class="row g-3 p-3">
+            {% for activite in activites  %}
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+
+                        <div class="card-body">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                {% if activite.category.name|lower == "bug" %}
+                                    <span class="badge" style="color:#EF4444; background: #FEE2E2;">
+                                        {{ activite.category }}
+                                    </span>
+
+                                {% elif activite.category.name|lower == "sprint" %}
+                                    <span class="badge" style="color:#22C55E; background: #DCFCE7;">
+                                        {{ activite.category }}
+                                    </span>
+
+                                {% elif activite.category.name|lower == "veille" %}
+                                    <span class="badge" style="color:#CA8A04; background:#FEF9C3;">
+                                        {{ activite.category }}
+                                    </span>
+
+                                {% else %}
+                                    <span class="badge" style="color:#64748B; background:#E2E8F0;">
+                                        {{ activite.category }}
+                                    </span>
+                                {% endif %}
+                                <span style="color: #94A3B8; font-size: 12px;">
+                                    {{activite.created_at}}
+                                </span>
+                            </div>
+
+                            <h5 class="mt-3 fw-bold" style="color: #0F172A; font-size: 18px;">
+                                {{activite.title}}
+                            </h5>
+
+                            <p style="color: #475569; font-size: 14px;padding-bottom: 10px;">
+                                {{ activite.content|truncatechars:40 }}
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="height: 25px; width: 25px; border-radius: 100%; background-color: black;"><img src="" alt=""></span>
+                                    <span style="color: #334155; font-size: 12px;">{{ activite.author.username }}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if user.is_authenticated and user == activite.author %}
+                                        <a data-bs-toggle="modal" data-bs-target="#deleteModal{{ activite.id }}" class="text-decoration-none" style="color: red;"><i class="bi bi-trash"></i></a>
+                                        <a href="{% url 'activite_edit' activite.id %}" class="text-decoration-none" href=""><i class="bi bi-pencil-square"></i></a>
+                                    {% endif %}
+                                    <a href="{% url 'detail_activite' activite.id %}" style="background-color: #F8FAFC; padding: 4px 10px;border-radius: 10px; font-size: 12px; font-weight: bold; color: #334155; text-decoration: none;">Detail</a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+            <div class="modal fade" id="deleteModal{{ activite.id }}" tabindex="-1">
+
+                <div class="modal-dialog modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <!-- Header -->
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                Confirmation
+                            </h5>
+
+                            <button 
+                                type="button" 
+                                class="btn-close"
+                                data-bs-dismiss="modal">
+                            </button>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="modal-body">
+                            Voulez-vous vraiment supprimer cette activité ?
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="modal-footer">
+
+                            <button 
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                                Annuler
+                            </button>
+
+                            <form method="post" action="{% url 'activite_delete' activite.id %}">
+                                {% csrf_token %}
+
+                                <button type="submit" class="btn btn-danger">
+                                    Oui, supprimer
+                                </button>
+                            </form>
+                            
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+                        
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Pagination -->
+{% if is_paginated %}
+    <div class="d-flex justify-content-end align-items-center gap-2 my-4 p-3">
+        <!--Est-ce qu’il existe une page avant ?-->
+        {% if page_obj.has_previous %}
+            <!--lien vers la page précédente-->
+            <a href="?page={{ page_obj.previous_page_number }}"
+            class="btn btn-outline-primary">
+                Précédent
+            </a>
+        {% endif %}
+
+        <!--Boucle sur tous les numéros de pages-->
+        {% for num in page_obj.paginator.page_range %}
+            <!--Est-ce que ce numéro est la page actuelle ?-->
+            {% if page_obj.number == num %}
+
+                <span class="btn btn-primary">
+                    {{ num }}
+                </span>
+
+            {% else %}
+
+                <a href="?page={{ num }}"
+                class="btn btn-outline-primary">
+                    {{ num }}
+                </a>
+
+            {% endif %}
+
+        {% endfor %}
+
+        <!--Est-ce qu’il existe une page suivante ?-->
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"
+            class="btn btn-outline-primary">
+                Suivant
+            </a>
+        {% endif %}
+
+    </div>
+
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock content %}
