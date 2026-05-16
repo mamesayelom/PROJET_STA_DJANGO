@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from .models import Entry
-from .forms import EntryForm
+from .forms import EntryForm,CustomUserCreationForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import UserPassesTestMixin,LoginRequiredMixin
 from django.views.generic import UpdateView,DeleteView,ListView,DetailView,CreateView
@@ -56,7 +56,7 @@ class ActiviteListview(ListView):
                 category__name__iexact=category
             )
 
-        return Entry.objects.all()
+        return Entry.objects.order_by('-created_at')
 
 class AjouterActiviteView(CreateView):
     model = Entry
@@ -101,3 +101,9 @@ class DetailActiviteView(DetailView):
     model = Entry
     template_name = 'detail_activite.html'
     context_object_name = 'activite'
+
+
+class InscriptionView(CreateView):
+    form_class = CustomUserCreationForm
+    template_name = 'registration/inscription.html'
+    success_url = reverse_lazy('login')

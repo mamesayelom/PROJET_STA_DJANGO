@@ -1,16 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Se connecter</button>
-        
-    </form>
-</body>
-</html>
+{% extends "base1.html" %}
+{% block content %}
+{% load widget_tweaks %}
+
+<section class="bg-white pt-5">
+<div class="container pt-5">
+    <form method="post" class="p-4 shadow rounded-4 bg-white mx-auto" style="max-width: 400px;">
+    {% csrf_token %}
+
+    <h2 class="mb-4 text-center">Connexion</h2>
+
+    <div class="mb-3">
+        {{ form.username.label_tag }}
+        {{ form.username|add_class:"form-control" }}
+        {{ form.username.errors }}
+    </div>
+
+    <div class="mb-3">
+        {{ form.password.label_tag }}
+        {{ form.password|add_class:"form-control" }}
+        {{ form.password.errors }}
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 mb-2">Se connecter</button>
+    <div class="text-center">
+        <a  style="color: black; text-decoration: none;"  href="{% url 'inscription' %}">S'inscrire</a>
+    </div>
+</form>
+</div>
+</section>
+{% endblock %}
